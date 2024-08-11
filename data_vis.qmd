@@ -1,0 +1,553 @@
+---
+title: "Data Visualisation using R"
+author: Dr Afiq Amsyar
+date: last-modified
+format:
+  html:
+    toc: true
+    toc-location: left
+    theme: 
+      light: cosmo
+      dark: [cosmo, theme-dark.scss]
+    grid:
+      sidebar-width: 300px
+      margin-width: 300px
+      body-width: 900px
+  docx: 
+    toc: true
+    toc-depth: 2
+self-contained: true
+---
+
+# Getting started with Data Visualization **using R**
+
+“The simple graph has brought more information to the data analyst’s mind than any other device.” — John Tukey
+
+**Visualisation** is a fundamentally human activity. A good visualisation will show you things that you did not expect, or raise new questions about the data. A good visualisation might also hint that you’re asking the wrong question, or you need to collect different data. Visualisations can surprise you, but don’t scale particularly well because they require a human to interpret them.
+
+# Graphics packages in R
+
+There are many **graphics packages** in R. Some packages are aimed to perform general tasks related with graphs. Some provide specific graphics for certain analyses.
+
+The popular general graphics packages in R are:
+
+1.  **graphics** : a base R package
+
+2.  **ggplot2** : a user-contributed package by Hadley Wickham
+
+3.  **lattice** : a user-contributed package
+
+Note:
+
+-   Do you remember what is a package in R?
+
+-   Where can you learn more about R packages? Google for CRAN Task Views
+
+Except for **graphics** package (a a base R package), other packages need to downloaded and installed into your R library.
+
+Examples of other more specific packages - to run graphics for certain analyses - are:
+
+1.  **survminer::ggsurvlot**
+
+2.  **sjPlot**
+
+# Using Basic Plot Function
+
+## Import data into R environment
+
+```{r}
+aiq <- airquality
+```
+
+Daily air quality measurements in New York, May to September 1973.
+
+### Format
+
+A data frame with 153 observations on 6 variables.
+
+|        |           |         |                         |
+|-------:|:----------|:--------|:------------------------|
+| `[,1]` | `Ozone`   | numeric | Ozone (ppb)             |
+| `[,2]` | `Solar.R` | numeric | Solar R (lang)          |
+| `[,3]` | `Wind`    | numeric | Wind (mph)              |
+| `[,4]` | `Temp`    | numeric | Temperature (degrees F) |
+| `[,5]` | `Month`   | numeric | Month (1--12)           |
+| `[,6]` | `Day`     | numeric | Day of month (1--31)    |
+
+### Details
+
+Daily readings of the following air quality values for May 1, 1973 (a Tuesday) to September 30, 1973.
+
+-   `Ozone`: Mean ozone in parts per billion from 1300 to 1500 hours at Roosevelt Island
+
+-   `Solar.R`: Solar radiation in Langleys in the frequency band 4000–7700 Angstroms from 0800 to 1200 hours at Central Park
+
+-   `Wind`: Average wind speed in miles per hour at 0700 and 1000 hours at LaGuardia Airport
+
+-   `Temp`: Maximum daily temperature in degrees Fahrenheit at LaGuardia Airport.
+
+## Barplot
+
+There are two types of bar plots- horizontal and vertical which represent data points as horizontal or vertical bars of certain lengths proportional to the value of the data item. They are generally used for continuous and categorical variable plotting. By setting the **horiz** parameter to true and false, we can get horizontal and vertical bar plots respectively. 
+
+```{r}
+# Horizontal Bar Plot for 
+# Ozone concentration in air
+barplot(aiq$Ozone,
+        main = 'Ozone Concenteration in air',
+        xlab = 'Ozone Levels', horiz = TRUE)
+
+```
+
+```{r}
+# Vertical Bar Plot for 
+# Ozone concentration in air
+barplot(aiq$Ozone, main = 'Ozone Concenteration in air', 
+        xlab = 'Ozone Levels', col ='blue', horiz = FALSE)
+
+```
+
+Bar plots are used for the following scenarios:
+
+-   To perform a comparative study between the various data categories in the data set.
+
+-   To analyze the change of a variable over time in months or years.
+
+## Histogram
+
+A histogram is like a bar chart as it uses bars of varying height to represent data distribution. However, in a histogram values are grouped into consecutive intervals called bins. In a Histogram, continuous values are grouped and displayed in these bins whose size can be varied.
+
+```{r}
+# Histogram for Maximum Daily Temperature
+
+hist(aiq$Temp, main ="Maximum Temperature(Daily)",
+    xlab ="Temperature(Fahrenheit)",
+    xlim = c(50, 125), col ="yellow",
+    freq = TRUE)
+
+```
+
+For a histogram, the parameter **xlim** can be used to specify the interval within which all values are to be displayed. \
+Another parameter **freq** when set to *TRUE* denotes the frequency of the various values in the histogram and when set to *FALSE*, the probability densities are represented on the y-axis such that they are of the histogram adds up to one. 
+
+## Box Plot
+
+The statistical summary of the given data is presented graphically using a boxplot. A boxplot depicts information like the minimum and maximum data point, the median value, first and third quartile, and interquartile range.
+
+```{r}
+# Box plot for average wind speed
+boxplot(aiq$Wind, main = "Average wind speed",
+        xlab = "Miles per hour", ylab = "Wind",
+        col = "orange", border = "black",
+        horizontal = TRUE)
+
+```
+
+Multiple box plots can also be generated at once through the following code:
+
+```{r}
+# Multiple Box plots, each representing
+# an Air Quality Parameter
+boxplot(aiq[, 1:4], 
+        main ='Box Plots for Air Quality Parameters')
+
+```
+
+## Scatter Plot
+
+A scatter plot is composed of many points on a Cartesian plane. Each point denotes the value taken by two parameters and helps us easily identify the relationship between them.
+
+```{r}
+# Scatter plot for Ozone Concentration per month
+
+plot(aiq$Ozone, aiq$Temp,
+     main ="Scatterplot Example",
+    xlab ="Ozone Concentration in parts per billion",
+    ylab =" Temperature ", pch = 19)
+
+```
+
+```{r}
+plot(aiq) # plot matrix
+```
+
+# Using ggplot2 function
+
+`ggplot2` is a `R` package dedicated to data visualization. It can greatly improve the quality and aesthetics of your graphics, and will make you much more efficient in creating them.
+
+To work with **ggplot2**, remember
+
+-   start with: `ggplot()`
+
+-   which data: `data = X`
+
+-   which variables: `aes(x = , y = )`
+
+-   which graph: `geom_histogram()`, `geom_points()`
+
+The official website for ggplot2 is here <http://ggplot2.org/>.
+
+## Load Package
+
+```{r}
+library(tidyverse)
+```
+
+That one line of code loads the core tidyverse; packages which you will use in almost every data analysis.
+
+## Data Frame
+
+```{r}
+BOD
+```
+
+This data frame contains the following columns:
+
+`Time`
+
+:   A numeric vector giving the time of the measurement (days).
+
+`demand`
+
+:   A numeric vector giving the biochemical oxygen demand (mg/l).
+
+## Basic numerical plot
+
+### Scatter Plot
+
+```{r}
+ggplot(data = BOD,
+       mapping = aes (x = Time,
+                      y = demand)) + 
+  geom_point() 
+```
+
+### Add line into the trend graph
+
+```{r}
+ggplot(data = BOD,
+       mapping = aes (x = Time,
+                      y = demand)) + 
+  geom_point() +
+  geom_line()
+```
+
+### Plot with simpler code
+
+```{r}
+ggplot(BOD, aes( Time, demand)) +
+geom_point() +
+  geom_line()
+```
+
+### Add cosmetics
+
+```{r}
+ggplot(BOD, aes( Time, demand)) +
+geom_point(size = 3) +
+  geom_line(colour = "red")
+```
+
+### Load More Data
+
+```{r}
+view(CO2)
+```
+
+Carbon Dioxide Uptake in Grass Plants
+
+The `CO2` data frame has 84 rows and 5 columns of data from an experiment on the cold tolerance of the grass species *Echinochloa crus-galli*.
+
+```{r}
+CO2 %>% 
+  ggplot(aes(conc,uptake,
+             colour = Treatment)) +
+  geom_point()
+```
+
+```{r}
+CO2 %>% 
+  ggplot(aes(conc,uptake,
+             colour = Treatment)) +
+  geom_point(size = 3,alpha = 0.5) +
+  geom_smooth()
+```
+
+### Better visualization
+
+```{r}
+CO2 %>% 
+  ggplot(aes(conc,uptake,
+             colour = Treatment)) +
+  geom_point(size = 3,alpha = 0.5) +
+  geom_smooth(method = lm, se = FALSE)
+```
+
+### Apply facet_wrap for viewing the data according to categorical variable (Split your plot)
+
+```{r}
+CO2 %>% 
+  ggplot(aes(conc,uptake,
+             colour = Treatment)) +
+  geom_point(size = 3,alpha = 0.5) +
+  geom_smooth(method = lm, se = FALSE) +
+  facet_wrap(~Type)
+```
+
+### Customizing labels and title
+
+```{r}
+CO2 %>% 
+  ggplot(aes(conc,uptake,
+             colour = Treatment)) +
+  geom_point(size = 3,alpha = 0.5) +
+  geom_smooth(method = lm, se = FALSE) +
+  facet_wrap(~Type) +
+  labs(title = "Concentration of CO2") +
+  theme_bw()
+```
+
+### Correlogram 
+
+A [correlogram](https://www.data-to-viz.com/graph/correlogram.html) or correlation matrix allows to analyse the relationship between each pair of numeric variables in a dataset. It gives a quick overview of the whole dataset. It is more used for [exploratory]{.underline} purpose than [explanatory]{.underline}.
+
+Back to the **aiq** data
+
+```{r}
+library(corrplot)
+```
+
+```{r}
+# Calculate the correlation matrix (only selecting wind and temperature columns)
+cor_matrix <- cor(aiq[, c("Wind", "Temp")])
+
+# Visualize the correlation matrix
+corrplot(cor_matrix, method = "circle", type = "full", 
+         tl.col = "black", tl.srt = 45, title = "Correlation between Wind and Temperature")
+```
+
+## Basic categorical plot
+
+```{r}
+CO2 %>% 
+  ggplot(aes(Treatment, uptake))+
+  geom_boxplot() 
+```
+
+### Add more variables
+
+```{r}
+CO2 %>% 
+  ggplot(aes(Treatment, uptake))+
+  geom_boxplot() +
+  geom_point(aes(colour = Plant))
+```
+
+### Use facet_wrap function
+
+```{r}
+CO2 %>% 
+  ggplot(aes(Treatment, uptake))+
+  geom_boxplot() +
+  geom_point(aes(colour = Plant)) +
+  facet_wrap(~Type) 
+```
+
+### Flip the chart
+
+```{r}
+CO2 %>% 
+  ggplot(aes(Treatment, uptake))+
+  geom_boxplot() +
+  geom_point(aes(colour = Plant)) +
+  facet_wrap(~Type) +
+  coord_flip()
+```
+
+### add labels
+
+```{r}
+CO2 %>% 
+  ggplot(aes(Treatment, uptake))+
+  geom_boxplot() +
+  geom_point(aes(colour = Plant)) +
+  facet_wrap(~Type) +
+  coord_flip() +
+  theme_bw() +
+  labs(title = "Chilled vs Non-Chilled")
+```
+
+### add more variables/ attributes
+
+```{r}
+CO2 %>% 
+  ggplot(aes(Treatment, uptake))+
+  geom_boxplot() +
+  geom_point(aes(size = conc,
+                 colour = Plant)) +
+  facet_wrap(~Type) +
+  coord_flip() +
+  theme_bw() +
+  labs(title = "Chilled vs Non-Chilled")
+```
+
+## Visualization and Relationship
+
+```{r}
+view(mpg)
+```
+
+A data frame with 234 rows and 11 variables:
+
+manufacturer
+
+:   manufacturer name
+
+model
+
+:   model name
+
+displ
+
+:   engine displacement, in litres
+
+year
+
+:   year of manufacture
+
+cyl
+
+:   number of cylinders
+
+trans
+
+:   type of transmission
+
+drv
+
+:   the type of drive train, where f = front-wheel drive, r = rear wheel drive, 4 = 4wd
+
+cty
+
+:   city miles per gallon
+
+hwy
+
+:   highway miles per gallon
+
+fl
+
+:   fuel type
+
+class
+
+:   "type" of car
+
+### **Does engine size had relationship with efficiency?**
+
+```{r}
+mpg %>% 
+  ggplot(aes(displ,cty)) +
+  geom_point()
+```
+
+### View the plot according to some category
+
+```{r}
+mpg %>% 
+  ggplot(aes(displ,cty)) +
+  geom_point(aes(colour = drv))
+```
+
+### add trend line to the plot
+
+```{r}
+mpg %>% 
+  ggplot(aes(displ,cty)) +
+  geom_point(aes(colour = trans)) +
+  geom_smooth()
+```
+
+### Linearize the relationship
+
+```{r}
+mpg %>% 
+  ggplot(aes(displ,cty)) +
+  geom_point(aes(colour = trans)) +
+  geom_smooth(method = lm)
+```
+
+```{r}
+mpg %>% 
+  ggplot(aes(displ,cty)) +
+  geom_point(aes(colour = trans)) +
+   geom_smooth(method = lm) +
+  facet_wrap(~drv)
+```
+
+### Customizing labels and title
+
+```{r}
+mpg %>% 
+  ggplot(aes(displ,cty)) +
+  geom_point(aes(colour = trans)) +
+   geom_smooth(method = lm) +
+  facet_wrap(~drv) +
+  labs(x = "engine size" ,
+       y = "City per Gallon",
+       title = "Fuel Efficiency") +
+  theme_bw()
+```
+
+### Saving your plot
+
+```{r}
+mpg %>% 
+  ggplot(aes(displ,cty)) +
+  geom_point(aes(colour = trans)) +
+   geom_smooth(method = lm) +
+  facet_wrap(~drv) +
+  labs(x = "engine size" ,
+       y = "City per Gallon",
+       title = "Fuel Efficiency") +
+  theme_bw() 
+
+ggsave('mpg.pdf')
+```
+
+## Other task : Animated chart
+
+```{r}
+# Charge libraries
+library(gganimate)
+```
+
+```{r}
+p <- ggplot(mpg, aes(displ, cty,colour = trans)) +
+  geom_point() +
+  scale_x_log10() +
+  theme_bw() +
+  labs(title = 'Year: {frame_time}', x = 'Engine Size', y = 'City Miles per Gallon') +
+  transition_time(year) +
+  ease_aes('linear')
+
+# Render the animation and save it as a GIF
+anim <- animate(p)
+anim_save("gif_chart.gif", animation = anim)
+```
+
+## **Task**
+
+1.  Get data o your interest.
+
+2.  Make 5 or 6 plots to tell us about your data
+
+3.  Customize your data - make change to colour, title, axes etc
+
+## Further Reading
+
+-   Different types of geom <https://ggplot2.tidyverse.org/reference/index.html>
+
+-   Customizing your plots: Making changes to plot, add title, change themes etc <http://www.cookbook-r.com/Graphs/>
+
+-   more advanced R graphs <https://www.r-graph-gallery.com/>
